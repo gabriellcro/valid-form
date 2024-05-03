@@ -48,6 +48,60 @@ class ValidForm {
     });
   }
 
+  isValidContact(messageSuccess, messageError) {
+    const regex = /^\(([\d]{2})\)\s(\d{5})\-(\d{4})|\d{11}/;
+    const inputLength = this.checkLength(this.contact, "11", "15");
+
+    this.contact.addEventListener("change", () => {
+      const value = this.contact.value;
+      if (value.length === inputLength && regex.test(value)) {
+        this.addAlertSuccess(this.contact, messageSuccess);
+      } else {
+        this.addAlertDanger(this.contact, messageError, messageSuccess);
+
+        console.log(value.length === inputLength);
+        console.log(inputLength);
+        console.log(value.length);
+        console.log(regex.test(value));
+      }
+    });
+  }
+
+  // OPCIONAL: Aplica uma máscara no input (ao aplicar a máscara, declare acima do 'isValidContact()' para validar com mais precisão o input)
+  applyContactMask() {
+    if (!(this.contact instanceof HTMLInputElement)) return;
+
+    if (this.contact.type !== "tel") this.contact.setAttribute("type", "tel");
+
+    if (this.contact.maxlength !== 15)
+      this.contact.setAttribute("maxlength", "15");
+
+    this.contact.addEventListener("keypress", () => {
+      let maskedContact = this.contact.value;
+
+      if (maskedContact.length === 2)
+        maskedContact = "(" + maskedContact.slice(0, 2) + ")" + " ";
+
+      if (maskedContact.length === 11)
+        maskedContact = maskedContact.slice(0, 10) + "-";
+
+      this.contact.value = maskedContact;
+    });
+  }
+
+  // Se o input for 'type=number' recebe o argumento 'num', mas se for 'type=string' recebe o argumento 'str'
+  checkLength(input, num, str) {
+    let length = Number(str);
+    if (input.type === "number") length = Number(num);
+
+    return length;
+  }
+
+  // Remove todos os caracteres que não são números
+  clearInput(input) {
+    return input.replace(/\D+/g, "");
+  }
+
   // Adiciona um feedback de erro
   addAlertDanger(input, messageError, messageSuccess) {
     // Verifica se existe os argumentos da classe de sucesso, se for verdadeiro remove o alerta de sucesso.
@@ -136,6 +190,9 @@ function boot() {
     "Nome válido"
   );
   validForm.isValidEmail("E-mail válido", "E-mail inválido");
+
+  validForm.applyContactMask();
+  validForm.isValidContact("Número inválido", "Número válido");
 }
 
 export default ValidForm;

@@ -23,14 +23,9 @@ class ValidCPF extends ValidForm {
     });
   }
 
-  // Remove todos os caracteres que não são números
-  clearCPF() {
-    return this.cpf.value.replace(/\D+/g, "");
-  }
-
   // Converte o valor do 'input' em um 'array'
   convertArrayCPF() {
-    return Array.from(this.clearCPF());
+    return Array.from(this.clearInput(this.cpf.value));
   }
 
   // Cria o último ou antepenúltimo digito do CPF
@@ -51,7 +46,7 @@ class ValidCPF extends ValidForm {
 
   // Verifica se o antepútino e ultimo digito do CPF é valido
   checkInputCPF(input) {
-    let num = this.checkLengthCPF();
+    let num = this.checkLength(this.cpf, "11", "14");
 
     const digit = Array.from(input);
 
@@ -63,23 +58,17 @@ class ValidCPF extends ValidForm {
     );
   }
 
-  // Verifica o tamalho do formato valido do CPF baseado no tipo de 'input'
-  checkLengthCPF() {
-    let length = 14;
-    if (this.cpf.type === "number") length = 11;
-
-    return length;
-  }
-
   // Verifica o se o CPF é uma sequencia númerica
   isSequence(input) {
     const arr = Array.from(input);
     if (!input) return;
 
-    return Number(arr[0].charAt(0).repeat(11)) !== Number(this.clearCPF(input));
+    return (
+      Number(arr[0].charAt(0).repeat(11)) !== Number(this.clearInput(input))
+    );
   }
 
-  // OPCIONAL: Aplica uma máscara no input
+  // OPCIONAL: Aplica uma máscara no input (ao aplicar a máscara, declare acima do 'isValidCPF()' para validar com mais precisão o input)
   applyCpfMask() {
     if (!(this.cpf instanceof HTMLInputElement)) return;
 
